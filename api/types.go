@@ -436,9 +436,6 @@ func (d *Duration) UnmarshalJSON(b []byte) (err error) {
 			d.Duration = time.Duration(t * float64(time.Second))
 		}
 	case string:
-		if t == "" {
-			return nil
-		}
 		if err = d.FromString(t); err != nil {
 			return err
 		}

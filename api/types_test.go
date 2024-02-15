@@ -33,16 +33,6 @@ func TestKeepAliveParsing(t *testing.T) {
 		},
 	}
 
-	t.Run("Default", func(t *testing.T) {
-		ser := `{ "keep_alive": "" }`
-
-		var dec ChatRequest
-		err := json.Unmarshal([]byte(ser), &dec)
-		require.NoError(t, err)
-
-		assert.Equal(t, &Duration{5 * time.Minute}, dec.KeepAlive)
-	})
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			ser, err := json.Marshal(test.req)
