@@ -167,12 +167,23 @@ func RunHandler(cmd *cobra.Command, args []string) error {
 
 	interactive := true
 
+	var defaultSessionDuration = 5 * time.Minute
+	keepAlive := &api.Duration{Duration: defaultSessionDuration}
+	if envKeepAlive := os.Getenv("OLLAMA_KEEPALIVE"); envKeepAlive != "" {
+		if err = keepAlive.ParseDurationString(envKeepAlive); err != nil {
+			return err
+		}
+	}
+
+	fmt.Println(fmt.Sprintf("current keepalive: %v", keepAlive))
+
 	opts := runOptions{
 		Model:       args[0],
 		WordWrap:    os.Getenv("TERM") == "xterm-256color",
 		Options:     map[string]interface{}{},
 		MultiModal:  slices.Contains(show.Details.Families, "clip"),
 		ParentModel: show.Details.ParentModel,
+		KeepAlive:   keepAlive,
 	}
 
 	format, err := cmd.Flags().GetString("format")
@@ -474,6 +485,7 @@ type runOptions struct {
 	Images      []api.ImageData
 	Options     map[string]interface{}
 	MultiModal  bool
+	KeepAlive   *api.Duration
 }
 
 type displayResponseState struct {
@@ -643,14 +655,15 @@ func generate(cmd *cobra.Command, opts runOptions) error {
 	}
 
 	request := api.GenerateRequest{
-		Model:    opts.Model,
-		Prompt:   opts.Prompt,
-		Context:  generateContext,
-		Images:   opts.Images,
-		Format:   opts.Format,
-		System:   opts.System,
-		Template: opts.Template,
-		Options:  opts.Options,
+		Model:     opts.Model,
+		Prompt:    opts.Prompt,
+		Context:   generateContext,
+		Images:    opts.Images,
+		Format:    opts.Format,
+		System:    opts.System,
+		Template:  opts.Template,
+		Options:   opts.Options,
+		KeepAlive: opts.KeepAlive,
 	}
 
 	if err := client.Generate(ctx, &request, fn); err != nil {
