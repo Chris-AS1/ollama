@@ -574,10 +574,11 @@ func chat(cmd *cobra.Command, opts runOptions) (*api.Message, error) {
 	}
 
 	req := &api.ChatRequest{
-		Model:    opts.Model,
-		Messages: opts.Messages,
-		Format:   opts.Format,
-		Options:  opts.Options,
+		Model:     opts.Model,
+		Messages:  opts.Messages,
+		Format:    opts.Format,
+		Options:   opts.Options,
+		KeepAlive: opts.KeepAlive,
 	}
 
 	if err := client.Chat(cancelCtx, req, fn); err != nil {

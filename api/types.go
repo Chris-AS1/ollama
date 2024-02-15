@@ -415,6 +415,11 @@ func (d *Duration) ParseDurationString(t string) error {
 	}
 	return nil
 }
+
+func (d *Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.String())
+}
+
 func (d *Duration) UnmarshalJSON(b []byte) (err error) {
 	var v any
 	if err := json.Unmarshal(b, &v); err != nil {
