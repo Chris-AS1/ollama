@@ -170,12 +170,10 @@ func RunHandler(cmd *cobra.Command, args []string) error {
 	var defaultSessionDuration = 5 * time.Minute
 	keepAlive := &api.Duration{Duration: defaultSessionDuration}
 	if envKeepAlive := os.Getenv("OLLAMA_KEEPALIVE"); envKeepAlive != "" {
-		if err = keepAlive.ParseDurationString(envKeepAlive); err != nil {
+		if err = keepAlive.FromString(envKeepAlive); err != nil {
 			return err
 		}
 	}
-
-	fmt.Println(fmt.Sprintf("current keepalive: %v", keepAlive))
 
 	opts := runOptions{
 		Model:       args[0],
