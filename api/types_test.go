@@ -25,7 +25,6 @@ func TestKeepAliveParsingFromStruct(t *testing.T) {
 		},
 		{
 			name: "Negative Duration",
-
 			req: &ChatRequest{
 				KeepAlive: &Duration{Duration: -1 * time.Minute},
 			},
