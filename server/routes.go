@@ -66,8 +66,6 @@ var loaded struct {
 // load a model into memory if it is not already loaded, it is up to the caller to lock loaded.mu before calling this function
 func load(c *gin.Context, model *Model, opts api.Options, keepAlive *api.SessionDuration) error {
 	workDir := c.GetString("workDir")
-	/* keepAliveStr, _ := c.Get("keepAlive")
-	keepAlive := keepAliveStr.(*api.SessionDuration) */
 
 	needLoad := loaded.runner == nil || // is there a model loaded?
 		loaded.ModelPath != model.ModelPath || // has the base model changed?
@@ -904,7 +902,7 @@ func NewServer() (*Server, error) {
 		return nil, err
 	}
 
-	keepAlive, err := api.NewSessionDuration(
+	keepAliveServer, err := api.NewSessionDuration(
 		api.WithEnvVar("OLLAMA_DEFAULT_KEEPALIVE"),
 	)
 	if err != nil {
@@ -913,7 +911,7 @@ func NewServer() (*Server, error) {
 
 	return &Server{
 		WorkDir:   workDir,
-		KeepAlive: keepAlive,
+		KeepAlive: keepAliveServer,
 	}, nil
 }
 

@@ -416,7 +416,7 @@ func WithEnvVar(name string) SessionDurationFunc {
 	return func(s *SessionDuration) error {
 		var err error
 		if envKeepAlive := os.Getenv(name); envKeepAlive != "" {
-			err = s.FromString(envKeepAlive)
+			err = s.fromString(envKeepAlive)
 		}
 		return err
 	}
@@ -441,12 +441,9 @@ func (d *SessionDuration) validate() {
 	if d.Duration < 0 {
 		d.Duration = time.Duration(math.MaxInt64)
 	}
-	fmt.Println("validated:", d.Duration)
 }
 
-func (d *SessionDuration) FromString(s string) error {
-	// currently redundant but prevents bugs
-	defer d.validate()
+func (d *SessionDuration) fromString(s string) error {
 	var err error
 	d.Duration, err = time.ParseDuration(s)
 	return err
@@ -467,7 +464,7 @@ func (d *SessionDuration) UnmarshalJSON(b []byte) (err error) {
 	case float64:
 		d.Duration = time.Duration(t * float64(time.Second))
 	case string:
-		if err = d.FromString(t); err != nil {
+		if err = d.fromString(t); err != nil {
 			return err
 		}
 	}
